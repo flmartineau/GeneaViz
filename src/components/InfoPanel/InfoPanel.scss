@@ -1,0 +1,61 @@
+.info-panel {
+    display: flex;
+    height: 100vh;
+    background-color: #c7c2c2;
+    z-index: 1;
+    width: 320px;
+    align-self: flex-end;
+
+    .content {
+        color: rgb(0, 0, 0);
+        
+
+        .header {
+            padding: 1rem;
+            color: white;
+            background-color: rgb(84, 112, 112);
+
+            .name {
+                font-weight: bold
+            }
+
+            .occupation {
+                font-size: 10pt;
+                font-style: italic;
+            }
+        }
+
+        .events {
+            padding: 1rem;
+
+            .event-info {
+                border-bottom: 1px solid black;
+                padding-bottom: 16px;
+                padding-top: 16px;
+
+
+                &-header {
+                    display: flex;
+                    font-weight: bold;
+                    justify-content: space-between;
+                }
+
+                &-content {
+                    font-size: 10pt;
+                }
+            }
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+    }
+}

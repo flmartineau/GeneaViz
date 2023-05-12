@@ -133,8 +133,11 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
       gender: individual.SEX === "M" ? "male" : "female",
       firstName,
       lastName,
+      occupation: individual.OCCUPATION,
       birthDate: individual["BIRTH/DATE"],
       birthPlace: individual["BIRTH/PLACE"],
+      marriageDate: familySpouseOf ? familySpouseOf["MARRIAGE/DATE"] : undefined,
+      marriagePlace: familySpouseOf ? familySpouseOf["MARRIAGE/PLACE"] : undefined,
       deathDate: individual["DEATH/DATE"],
       deathPlace: individual["DEATH/PLACE"],
       parents,
@@ -145,6 +148,11 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
 
     data.push(person);
   });
+
+  console.log(individuals);
+  console.log(families);
+
+  console.log(data);
 
   return data;
 };

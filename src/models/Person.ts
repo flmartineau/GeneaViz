@@ -7,8 +7,9 @@ export interface Person {
     birthPlace?: string;
     deathDate?: string;
     deathPlace?: string;
-    marriageDate?: Date;
+    marriageDate?: string;
     marriagePlace?: string;
+    occupation?: string;
     parents: PersonData[];
     siblings: PersonData[];
     children: PersonData[];

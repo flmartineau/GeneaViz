@@ -1,4 +1,9 @@
-/* TreeView.css */
+.tree-view-content {
+  display: flex;
+  flex-direction: column;
+}
+
+
 .tree-view {
     display: flex;
     width: 100%;
