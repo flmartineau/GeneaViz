@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { Person } from '../../models/Person';
 import './InfoPanel.scss';
+import { parseGedcomDate } from '../../utils/gedcom/GedcomParser';
 
 
 interface InfoPanelProps {
@@ -29,7 +30,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                                 Naissance
                             </div>
                             <div className='event-info-header-date'>
-                                {node.birthDate}
+                                {parseGedcomDate(node.birthDate, true)}
                             </div>
                         </div>
                         <div className='event-info-content'>
@@ -42,7 +43,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                                 Marriage
                             </div>
                             <div className='event-info-header-date'>
-                                {node.marriageDate}
+                                {parseGedcomDate(node.marriageDate, true)}
                             </div>
                         </div>
                         <div className='event-info-content'>
@@ -55,7 +56,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                                 Décès
                             </div>
                             <div className='event-info-header-date'>
-                                {node.deathDate}
+                                {parseGedcomDate(node.deathDate, true)}
                             </div>
                         </div>
                         <div className='event-info-content'>

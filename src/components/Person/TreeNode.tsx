@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import './TreeNode.scss';
 import { Person } from '../../models/Person';
+import { DATE_REGEX, parseDate, parseGedComDateNode } from '../../utils/gedcom/GedcomParser';
 
 interface TreeNodeProps {
     node: Person;
@@ -21,7 +22,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
       if (node.birthDate && node.deathDate) {
           dateString = `${parseDateString(node.birthDate)}-${parseDateString(node.deathDate)}`;
       } else if (node.birthDate) {
-          dateString = parseDateString(node.birthDate)!+'-????';
+          dateString = parseDate(node.birthDate, false)!+'-????';
       } else if (node.deathDate) {
           dateString = '????-' + parseDateString(node.deathDate)!
       } else {
@@ -37,8 +38,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
       if (dateString === undefined) return '????';
     
       if (dateString.match(/^ABT.*/)) {
-          let dateABT = dateString.split("ABT ")[1];
-          if (dateABT.match(/^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{4}$/)) {
+          let dateABT: string = dateString.split("ABT ")[1];
+          if (dateABT.match(DATE_REGEX.DD_MMM_YYYY)) {
             return "~ " + dateABT.split(" ")[2];
           } else {
             return "~ " + dateABT;
@@ -47,7 +48,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
 
       if (dateString.match(/^BET.*/)) {
         let dateBET = dateString.split("BET ")[1].split(" ")[0];
-        if (dateBET.match(/^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{4}$/)) {
+        if (dateBET.match(DATE_REGEX.DD_MMM_YYYY)) {
           return "~ " + dateBET.split(" ")[2];
         } else {
           return "~ " + dateBET;
@@ -56,14 +57,14 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
 
       if (dateString.match(/^AFT.*/)) {
         let dateAFT = dateString.split("AFT ")[1];
-        if (dateAFT.match(/^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{4}$/)) {
+        if (dateAFT.match(DATE_REGEX.DD_MMM_YYYY)) {
           return "> " + dateAFT.split(" ")[2];
         } else {
           return "> " + dateAFT;
         }
       }
     
-      if (dateString.match(/^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{4}$/)) {
+      if (dateString.match(DATE_REGEX.DD_MMM_YYYY)) {
           return dateString.split(" ")[2];
       }
     
@@ -79,7 +80,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
             <br />
             {node.lastName}
             <br />
-            {getDateString()}
+            {parseGedComDateNode(node.birthDate, node.deathDate)}
             </div>
         </div>
       );

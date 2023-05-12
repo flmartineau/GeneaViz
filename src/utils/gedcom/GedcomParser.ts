@@ -1,6 +1,15 @@
 import { compact, parse } from 'parse-gedcom';
 import { Person, PersonData } from '../../models/Person';
 
+export const DATE_REGEX = {
+  DD_MMM_YYYY: /^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{1,4}$/,
+  MMM_YYYY: /^(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{1,4}$/,
+  YYYY: /^\d{1,4}$/,
+  ABT: /^ABT.*/,
+  AFT: /^AFT.*/,
+  BEF: /^BEF.*/
+}
+
 
 export const parseGedcomFile = (gedcomData: string): Person[] | undefined => {
   try {
@@ -155,4 +164,67 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
   console.log(data);
 
   return data;
+};
+
+
+export const parseGedcomDate = (date: string | undefined, isFull : boolean): string => {
+  if (!date) return '????';
+
+  if (date.match(DATE_REGEX.ABT)) {
+    return parseDate(date.split(" ")[1], isFull, isFull ? 'vers ' : '~');
+  }
+  if (date.match(DATE_REGEX.BEF)) {
+    return parseDate(date.split(" ")[1], isFull, isFull ? 'avant ' : '<');
+  }
+  if (date.match(DATE_REGEX.AFT)) {
+    return parseDate(date.split(" ")[1], isFull, isFull ? 'après ' : '>');
+  }
+
+  return parseDate(date, isFull);
+}
+
+export const parseGedComDateNode = (birthDate: string | undefined, deathDate: string | undefined): string => {
+  return parseGedcomDate(birthDate, false) + '-' + parseGedcomDate(deathDate, false);
+}
+
+
+export const parseDate = (date: string, isFull: boolean, prefix?: string): string => {
+  let dateString: string = prefix ? prefix : '';
+  if (date.match(DATE_REGEX.DD_MMM_YYYY)) {
+    const [day, month, year] = date.split(' ');
+    
+    return dateString + (isFull ? `${day} ${translateMonth(month)} ${year}` : `${year}`); 
+  }
+
+  if (date.match(DATE_REGEX.MMM_YYYY)) {
+    const [month, year] = date.split(' ');
+    
+    return dateString + (isFull ? `${translateMonth(month)} ${year}` : `${year}`); 
+  }
+
+  if (date.match(DATE_REGEX.YYYY)) {
+    return dateString + date; 
+  }
+
+  return '????';
+}
+
+
+const translateMonth = (month: string): string => {
+  const monthTranslations: { [key: string]: string } = {
+    JAN: 'janv.',
+    FEB: 'févr.',
+    MAR: 'mars',
+    APR: 'avr.',
+    MAY: 'mai',
+    JUN: 'juin',
+    JUL: 'juil.',
+    AUG: 'août',
+    SEP: 'sept.',
+    OCT: 'oct.',
+    NOV: 'nov.',
+    DEC: 'déc.',
+  };
+
+  return monthTranslations[month] || '???';
 };
