@@ -7,7 +7,7 @@ GeneaViz est une application de visualisation d'arbres généalogiques qui perme
 - Chargement de fichiers GEDCOM
 - Visualisation des individus et de leurs relations
 - Zoom et déplacement dans l'arbre généalogique
-- A venir : Sélection d'un individu pour afficher plus d'informations
+- Sélection d'un individu pour afficher plus d'informations
 
 ## Installation
 
@@ -26,6 +26,16 @@ Installez les dépendances :
 
 `npm install`
 
+
+## Configuration clé API OpenAI (optionnel)
+
+Pour un individu, il est possible d'afficher une biographie générée avec le modèle GPT d'OpenAI.
+Pour cela, il est nécessaire d'ajouter une clé API OpenAI (vous pouvez en récupérer une à cetta adresse : https://platform.openai.com/account/api-keys) :
+
+1. Créez un fichier à la racine de votre projet et nommez-le `.env`.
+2. Ouvrez le fichier `.env` et ajoutez votre clé API de la manière suivante : `REACT_APP_OPENAI_API_KEY=votre_clé_api_ici`
+
+**Note :** Remplacez `votre_clé_api_ici` par votre véritable clé API.
 
 ## Utilisation
 

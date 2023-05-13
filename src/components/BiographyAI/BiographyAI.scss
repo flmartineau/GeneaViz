@@ -1,0 +1,30 @@
+.biography {
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+    
+
+    &-content {
+        background: #afbbbb;
+        margin-top: 16px;
+        border: solid #8d9797 2px;
+        border-radius: 6px;
+        font-size: 10pt;
+        min-width: 100%;
+        min-height: 50px;
+        padding: 8px;
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            padding: 8px;
+        }
+    }
+
+    button {
+        font-size: 14pt;
+        background: #afbbbb;
+        border: solid #8d9797  2px;
+        border-radius: 6px;
+    }
+}

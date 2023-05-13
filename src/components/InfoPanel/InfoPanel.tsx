@@ -1,14 +1,15 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Person } from '../../models/Person';
 import './InfoPanel.scss';
 import { parseGedcomDate } from '../../utils/gedcom/GedcomParser';
-
+import BiographyAI from '../BiographyAI/BiographyAI';
 
 interface InfoPanelProps {
     node: Person;
+    nodeFamily: any;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
+const InfoPanel: React.FC<InfoPanelProps> = ({ node, nodeFamily }) => {
 
     return (
         <div className="info-panel">
@@ -62,7 +63,9 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                         <div className='event-info-content'>
                             {node.deathPlace}
                         </div>
+
                     </div>
+                    <BiographyAI node={node} nodeFamily={nodeFamily} />
                 </div>
 
             </div>

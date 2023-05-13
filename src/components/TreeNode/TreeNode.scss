@@ -39,5 +39,7 @@
   }
 
   .isRoot {
-    border-color: rgba(0, 0, 0, .4);;
+    border-color: rgba(0, 0, 0, 0.4);
+    border-width: 3px;
+    background: #9595f9 !important;
   }

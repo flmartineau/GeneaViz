@@ -83,7 +83,7 @@ export const filterGenerations = (rootId: string, numberOfGenerations : number, 
   let filteredTmp: Person[] = data.filter((p: Person) => ind.generationId !== undefined && p.generationId !== undefined && 
         p.generationId <= maxGeneration && p.generationId >= ind.generationId-1);
 
-  let filtered: Person[] = JSON.parse(JSON.stringify(filteredTmp));
+  let filtered: Person[] = filteredTmp.map((p: Person) => p.clone());
 
   let filteredIds: string[] = filtered.map((f: Person) => f.id);
 
@@ -101,7 +101,8 @@ export const filterGenerations = (rootId: string, numberOfGenerations : number, 
     }
   });
 
-
+  console.log('filtered');
+  console.log(filtered);
   return filtered;
 }
 
@@ -137,31 +138,25 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
 
     const [firstName, lastName] = individual.NAME.split("/");
 
-    const person: Person = {
-      id: individual.xref_id,
-      gender: individual.SEX === "M" ? "male" : "female",
-      firstName,
-      lastName,
-      occupation: individual.OCCUPATION,
-      birthDate: individual["BIRTH/DATE"],
-      birthPlace: individual["BIRTH/PLACE"],
-      marriageDate: familySpouseOf ? familySpouseOf["MARRIAGE/DATE"] : undefined,
-      marriagePlace: familySpouseOf ? familySpouseOf["MARRIAGE/PLACE"] : undefined,
-      deathDate: individual["DEATH/DATE"],
-      deathPlace: individual["DEATH/PLACE"],
-      parents,
-      siblings,
-      children,
-      spouses,
-    };
+
+    const person = new Person(individual.xref_id);
+    person.gender = individual.SEX === "M" ? "male" : "female";
+    person.firstName = firstName;
+    person.lastName = lastName;
+    person.occupation = individual.OCCUPATION;
+    person.birthDate = individual["BIRTH/DATE"];
+    person.birthPlace = individual["BIRTH/PLACE"];
+    person.marriageDate = familySpouseOf ? familySpouseOf["MARRIAGE/DATE"] : undefined;
+    person.marriagePlace = familySpouseOf ? familySpouseOf["MARRIAGE/PLACE"] : undefined;
+    person.deathDate = individual["DEATH/DATE"];
+    person.deathPlace = individual["DEATH/PLACE"];
+    person.parents = parents;
+    person.siblings = siblings;
+    person.children = children;
+    person.spouses = spouses;
 
     data.push(person);
   });
-
-  console.log(individuals);
-  console.log(families);
-
-  console.log(data);
 
   return data;
 };
