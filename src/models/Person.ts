@@ -1,15 +1,19 @@
+import { GEDCOMDate } from "./GedcomDate";
+
 export class Person {
     private _id: string = "";
     private _gender: string = "";
     private _firstName?: string;
     private _lastName?: string;
-    private _birthDate?: string;
+    private _birthDate?: GEDCOMDate;
     private _birthPlace?: string;
-    private _deathDate?: string;
+    private _deathDate?: GEDCOMDate;
     private _deathPlace?: string;
-    private _marriageDate?: string;
+    private _marriageDate?: GEDCOMDate;
     private _marriagePlace?: string;
     private _occupation?: string;
+    private _events?: EventData[] = [];
+    private _residences?: EventData[] = [];
     private _parents: PersonData[] = [];
     private _siblings: PersonData[] = [];
     private _children: PersonData[] = [];
@@ -56,7 +60,7 @@ export class Person {
         return this._birthDate;
     }
 
-    set birthDate(value: string | undefined) {
+    set birthDate(value: GEDCOMDate | undefined) {
         this._birthDate = value;
     }
 
@@ -72,7 +76,7 @@ export class Person {
         return this._deathDate;
     }
 
-    set deathDate(value: string | undefined) {
+    set deathDate(value: GEDCOMDate | undefined) {
         this._deathDate = value;
     }
 
@@ -88,7 +92,7 @@ export class Person {
         return this._marriageDate;
     }
 
-    set marriageDate(value: string | undefined) {
+    set marriageDate(value: GEDCOMDate | undefined) {
         this._marriageDate = value;
     }
 
@@ -98,6 +102,22 @@ export class Person {
 
     set marriagePlace(value: string | undefined) {
         this._marriagePlace = value;
+    }
+
+    get events() {
+        return this._events;
+    }
+
+    set events(value: EventData[] | undefined) {
+        this._events = value;
+    }
+
+    get residences() {
+        return this._residences;
+    }
+
+    set residences(value: EventData[] | undefined) {
+        this._residences = value;
     }
 
     get occupation() {
@@ -148,6 +168,13 @@ export class Person {
         this._generationId = value;
     }
 
+    get lifeEvents(): EventData[] {
+
+
+    
+    return [];
+    }
+
     toJSON(removeNull?: boolean) {
         let result: {[key: string]: any} = {};
         for (let key of Object.keys(this)) {
@@ -157,21 +184,6 @@ export class Person {
             }
         }
         return result;
-    }
-
-
-    toGPTJSON() {
-        return {
-            firstName: this.firstName,
-            lastName: this.lastName,
-            birthDate: this.birthDate,
-            birthPlace: this.birthPlace,
-            deathDate: this.deathDate,
-            deathPlace: this.deathPlace,
-            marriageDate: this.marriageDate,
-            marriagePlace: this.marriagePlace
-        }
-
     }
 
     clone(): Person {
@@ -196,6 +208,11 @@ export class Person {
 }
 
 
+export interface EventData {
+    date: GEDCOMDate;
+    type?: string;
+    place?: string;
+}
 
 
 export interface PersonData {

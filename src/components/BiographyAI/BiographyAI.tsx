@@ -29,13 +29,15 @@ const BiographyAI: React.FC<BiographyAIProps> = ({ node, nodeFamily }) => {
         return {
             firstName: node.firstName,
             lastName: node.lastName,
-            birthDate: node.birthDate,
+            birthDate: node.birthDate?.date,
             birthPlace: node.birthPlace,
-            deathDate: node.deathDate,
+            deathDate: node.deathDate?.date,
             deathPlace: node.deathPlace,
-            marriageDate: node.marriageDate,
+            marriageDate: node.marriageDate?.date,
             marriagePlace: node.marriagePlace,
             occupation: node.occupation,
+            events: node.events,
+            residences: node.residences,
             children: nodeFamily.children.map((child: Person) => {
                 return {
                     firstName: child.firstName,

@@ -1,5 +1,6 @@
 import { compact, parse } from 'parse-gedcom';
-import { Person, PersonData } from '../../models/Person';
+import { EventData, Person, PersonData } from '../../models/Person';
+import { GEDCOMDate } from '../../models/GedcomDate';
 
 export const DATE_REGEX = {
   DD_MMM_YYYY: /^\d{2} (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{1,4}$/,
@@ -7,13 +8,15 @@ export const DATE_REGEX = {
   YYYY: /^\d{1,4}$/,
   ABT: /^ABT.*/,
   AFT: /^AFT.*/,
-  BEF: /^BEF.*/
+  BEF: /^BEF.*/,
+  BET: /^BET.*/,
 }
 
 
 export const parseGedcomFile = (gedcomData: string): Person[] | undefined => {
   try {
     console.log('Parsing GEDCOM file...');
+    console.log(parse(gedcomData));
     const parsedData = compact(parse(gedcomData));
     const root = parsedData.children;
 
@@ -100,9 +103,6 @@ export const filterGenerations = (rootId: string, numberOfGenerations : number, 
       p.siblings = p.siblings.filter((sibling: PersonData) => filteredIds.includes(sibling.id));
     }
   });
-
-  console.log('filtered');
-  console.log(filtered);
   return filtered;
 }
 
@@ -138,18 +138,41 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
 
     const [firstName, lastName] = individual.NAME.split("/");
 
+    let events: EventData[] = [];
+
+    if (individual["+EVENT/DATE"] && individual["+EVENT/TYPE"]) {
+        individual["+EVENT/DATE"].forEach((date: string, index: number) => {
+            events.push({
+                type: individual["+EVENT/TYPE"][index],
+                date: new GEDCOMDate(date)
+            });
+        });
+    }
+
+    let residences: EventData[] = [];
+
+    if (individual["+RESIDENCE/DATE"] && individual["+RESIDENCE/PLACE"]) {
+        individual["+RESIDENCE/DATE"].forEach((date: string, index: number) => {
+            residences.push({
+                place: individual["+RESIDENCE/PLACE"][index],
+                date: new GEDCOMDate(date)
+            });
+        });
+    }
 
     const person = new Person(individual.xref_id);
     person.gender = individual.SEX === "M" ? "male" : "female";
     person.firstName = firstName;
     person.lastName = lastName;
     person.occupation = individual.OCCUPATION;
-    person.birthDate = individual["BIRTH/DATE"];
+    person.birthDate = individual["BIRTH/DATE"] ? new GEDCOMDate(individual["BIRTH/DATE"]) : undefined;
     person.birthPlace = individual["BIRTH/PLACE"];
-    person.marriageDate = familySpouseOf ? familySpouseOf["MARRIAGE/DATE"] : undefined;
+    person.marriageDate = (familySpouseOf && familySpouseOf["MARRIAGE/DATE"]) ? new GEDCOMDate(familySpouseOf["MARRIAGE/DATE"]) : undefined;
     person.marriagePlace = familySpouseOf ? familySpouseOf["MARRIAGE/PLACE"] : undefined;
-    person.deathDate = individual["DEATH/DATE"];
+    person.deathDate = individual["DEATH/DATE"] ? new GEDCOMDate(individual["DEATH/DATE"]) : undefined;
     person.deathPlace = individual["DEATH/PLACE"];
+    person.residences = residences;
+    person.events = events;
     person.parents = parents;
     person.siblings = siblings;
     person.children = children;
@@ -157,6 +180,9 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
 
     data.push(person);
   });
+
+  console.log(individuals)
+  console.log(data);
 
   return data;
 };
@@ -178,8 +204,9 @@ export const parseGedcomDate = (date: string | undefined, isFull : boolean): str
   return parseDate(date, isFull);
 }
 
-export const parseGedComDateNode = (birthDate: string | undefined, deathDate: string | undefined): string => {
-  return parseGedcomDate(birthDate, false) + '-' + parseGedcomDate(deathDate, false);
+
+export const parseGedComDateNode = (birthDate: GEDCOMDate | undefined, deathDate: GEDCOMDate | undefined): string => {
+  return (birthDate ? birthDate.yearNodeText : '????') + '-' + (deathDate ? deathDate.yearNodeText : '????');
 }
 
 

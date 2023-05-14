@@ -1,3 +1,5 @@
+import { EventData } from "./Person";
+
 export interface FamilyInfo {
     firstName?: string;
     lastName?: string;
@@ -12,6 +14,8 @@ export interface FamilyInfo {
     parents?: RelativeInfo[];
     children?: RelativeInfo[];
     spouses?: RelativeInfo[];
+    events?: EventData[];
+    residences?: EventData[];
 }
 
 export interface RelativeInfo {

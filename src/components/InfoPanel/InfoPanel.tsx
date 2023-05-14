@@ -31,7 +31,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node, nodeFamily }) => {
                                 Naissance
                             </div>
                             <div className='event-info-header-date'>
-                                {parseGedcomDate(node.birthDate, true)}
+                                {node.birthDate?.dateText}
                             </div>
                         </div>
                         <div className='event-info-content'>
@@ -44,7 +44,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node, nodeFamily }) => {
                                 Marriage
                             </div>
                             <div className='event-info-header-date'>
-                                {parseGedcomDate(node.marriageDate, true)}
+                                {node.marriageDate?.dateText}
                             </div>
                         </div>
                         <div className='event-info-content'>
@@ -57,7 +57,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node, nodeFamily }) => {
                                 Décès
                             </div>
                             <div className='event-info-header-date'>
-                                {parseGedcomDate(node.deathDate, true)}
+                                {node.deathDate?.dateText}
                             </div>
                         </div>
                         <div className='event-info-content'>
