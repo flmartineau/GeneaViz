@@ -155,7 +155,8 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
         individual["+RESIDENCE/DATE"].forEach((date: string, index: number) => {
             residences.push({
                 place: individual["+RESIDENCE/PLACE"][index],
-                date: new GEDCOMDate(date)
+                date: new GEDCOMDate(date),
+                type: "Résidence"
             });
         });
     }
@@ -185,68 +186,4 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
   console.log(data);
 
   return data;
-};
-
-
-export const parseGedcomDate = (date: string | undefined, isFull : boolean): string => {
-  if (!date) return '????';
-
-  if (date.match(DATE_REGEX.ABT)) {
-    return parseDate(date.split(" ")[1], isFull, isFull ? 'vers ' : '~');
-  }
-  if (date.match(DATE_REGEX.BEF)) {
-    return parseDate(date.split(" ")[1], isFull, isFull ? 'avant ' : '<');
-  }
-  if (date.match(DATE_REGEX.AFT)) {
-    return parseDate(date.split(" ")[1], isFull, isFull ? 'après ' : '>');
-  }
-
-  return parseDate(date, isFull);
-}
-
-
-export const parseGedComDateNode = (birthDate: GEDCOMDate | undefined, deathDate: GEDCOMDate | undefined): string => {
-  return (birthDate ? birthDate.yearNodeText : '????') + '-' + (deathDate ? deathDate.yearNodeText : '????');
-}
-
-
-export const parseDate = (date: string, isFull: boolean, prefix?: string): string => {
-  let dateString: string = prefix ? prefix : '';
-  if (date.match(DATE_REGEX.DD_MMM_YYYY)) {
-    const [day, month, year] = date.split(' ');
-    
-    return dateString + (isFull ? `${day} ${translateMonth(month)} ${year}` : `${year}`); 
-  }
-
-  if (date.match(DATE_REGEX.MMM_YYYY)) {
-    const [month, year] = date.split(' ');
-    
-    return dateString + (isFull ? `${translateMonth(month)} ${year}` : `${year}`); 
-  }
-
-  if (date.match(DATE_REGEX.YYYY)) {
-    return dateString + date; 
-  }
-
-  return '????';
-}
-
-
-const translateMonth = (month: string): string => {
-  const monthTranslations: { [key: string]: string } = {
-    JAN: 'janv.',
-    FEB: 'févr.',
-    MAR: 'mars',
-    APR: 'avr.',
-    MAY: 'mai',
-    JUN: 'juin',
-    JUL: 'juil.',
-    AUG: 'août',
-    SEP: 'sept.',
-    OCT: 'oct.',
-    NOV: 'nov.',
-    DEC: 'déc.',
-  };
-
-  return monthTranslations[month] || '???';
 };

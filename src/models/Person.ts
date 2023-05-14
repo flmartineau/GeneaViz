@@ -1,3 +1,4 @@
+import { compareAsc } from "date-fns";
 import { GEDCOMDate } from "./GedcomDate";
 
 export class Person {
@@ -169,10 +170,21 @@ export class Person {
     }
 
     get lifeEvents(): EventData[] {
-
-
-    
-    return [];
+        let lifeEventsArray: EventData[] = (this.residences || []).concat(this.events || [])
+        if (this.marriageDate) {
+            lifeEventsArray.push({
+                date: this.marriageDate,
+                place: this.marriagePlace,
+                type: "Marriage"
+            });
+        }
+        lifeEventsArray.sort((a: EventData, b: EventData) => {
+            if (a.date.dateObject && b.date.dateObject) {
+                return compareAsc(a.date.dateObject, b.date.dateObject);
+            }
+            return 0;
+        });
+    return lifeEventsArray;
     }
 
     toJSON(removeNull?: boolean) {
@@ -210,7 +222,7 @@ export class Person {
 
 export interface EventData {
     date: GEDCOMDate;
-    type?: string;
+    type: string;
     place?: string;
 }
 

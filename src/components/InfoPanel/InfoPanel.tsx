@@ -1,7 +1,6 @@
 import React from 'react';
-import { Person } from '../../models/Person';
+import { EventData, Person } from '../../models/Person';
 import './InfoPanel.scss';
-import { parseGedcomDate } from '../../utils/gedcom/GedcomParser';
 import BiographyAI from '../BiographyAI/BiographyAI';
 
 interface InfoPanelProps {
@@ -38,19 +37,24 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node, nodeFamily }) => {
                             {node.birthPlace}
                         </div>
                     </div>
-                    <div className='event-info'>
-                        <div className='event-info-header'>
-                            <div className='event-info-header-name'>
-                                Marriage
+                    {
+                        node.lifeEvents.map((lifeEvent: EventData) => {
+                            return (
+                            <div className='event-info'>
+                                <div className='event-info-header'>
+                                    <div className='event-info-header-name'>
+                                        {lifeEvent.type}
+                                    </div>
+                                    <div className='event-info-header-date'>
+                                        {lifeEvent.date?.dateText}
+                                    </div>
+                                </div>
+                                <div className='event-info-content'>
+                                    {lifeEvent.place}
+                                </div>
                             </div>
-                            <div className='event-info-header-date'>
-                                {node.marriageDate?.dateText}
-                            </div>
-                        </div>
-                        <div className='event-info-content'>
-                            {node.marriagePlace}
-                        </div>
-                    </div>
+                        )})
+                    }
                     <div className='event-info'>
                         <div className='event-info-header'>
                             <div className='event-info-header-name'>

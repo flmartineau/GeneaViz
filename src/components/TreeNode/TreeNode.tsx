@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import './TreeNode.scss';
 import { Person } from '../../models/Person';
-import { parseGedComDateNode } from '../../utils/gedcom/GedcomParser';
 
 interface TreeNodeProps {
     node: Person;
@@ -23,7 +22,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, isRoot, style, onClick }) => 
             <br />
             {node.lastName}
             <br />
-            {parseGedComDateNode(node.birthDate, node.deathDate)}
+            {(node.birthDate ? node.birthDate.yearNodeText : '????') + '-' + (node.deathDate ? node.deathDate.yearNodeText : '????')}
             </div>
         </div>
       );
