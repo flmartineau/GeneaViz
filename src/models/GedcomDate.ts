@@ -1,14 +1,16 @@
 import { fr } from "date-fns/locale";
 import { DATE_REGEX } from "../utils/gedcom/GedcomParser";
 import { format, parse } from "date-fns";
+import { toGregorian } from 'revolutionary-calendar';
 
-type GedcomDateType = 'ABT' | 'BEF' | 'AFT' | 'BET' | '';
+type GedcomDateType = 'ABT' | 'BEF' | 'AFT' | 'BET' | 'EST' | '';
 
 const prefixNode: { [key: string]: string } = {
     'ABT': '~',
     'BET': '~',
     'BEF': '<',
     'AFT': '>',
+    'EST': '?',
     '': ''
 }
 
@@ -17,6 +19,7 @@ const prefixText: { [key: string]: string } = {
     'BET': 'entre ',
     'BEF': 'avant ',
     'AFT': 'après ',
+    'EST': 'peut-être ',
     '': ''
 }
 
@@ -31,7 +34,7 @@ export class GEDCOMDate {
 
     constructor(date: string) {
         if (date.match(DATE_REGEX.ABT) || date.match(DATE_REGEX.BEF) 
-            || date.match(DATE_REGEX.AFT)) {
+            || date.match(DATE_REGEX.AFT) || date.match(DATE_REGEX.EST)) {
                 const t = date.split(" ")[0];
                 const d = date.slice(4);
                 this._type = t as GedcomDateType;
@@ -45,6 +48,11 @@ export class GEDCOMDate {
             this._dateEnd = d2;
             this._dateEndObject = this.getDate(d2) as Date;
 
+        } else if (date.match(DATE_REGEX.DFRENCH)) {
+            this._type = '';
+            let dateGreg: Date = toGregorian(date.split("@#DFRENCH R@ ")[1]);
+            this._date = format(dateGreg, 'dd MMM yyyy', { locale: fr });
+            this._dateObject = dateGreg;
         } else {
             this._type = '';
             this._date = date;

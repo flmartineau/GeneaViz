@@ -10,11 +10,10 @@ export class Person {
     private _birthPlace?: string;
     private _deathDate?: GEDCOMDate;
     private _deathPlace?: string;
-    private _marriageDate?: GEDCOMDate;
-    private _marriagePlace?: string;
     private _occupation?: string;
     private _events?: EventData[] = [];
     private _residences?: EventData[] = [];
+    private _marriages?: EventData[] = [];
     private _parents: PersonData[] = [];
     private _siblings: PersonData[] = [];
     private _children: PersonData[] = [];
@@ -89,22 +88,6 @@ export class Person {
         this._deathPlace = value;
     }
 
-    get marriageDate() {
-        return this._marriageDate;
-    }
-
-    set marriageDate(value: GEDCOMDate | undefined) {
-        this._marriageDate = value;
-    }
-
-    get marriagePlace() {
-        return this._marriagePlace;
-    }
-
-    set marriagePlace(value: string | undefined) {
-        this._marriagePlace = value;
-    }
-
     get events() {
         return this._events;
     }
@@ -119,6 +102,14 @@ export class Person {
 
     set residences(value: EventData[] | undefined) {
         this._residences = value;
+    }
+
+    get marriages() {
+        return this._marriages;
+    }
+
+    set marriages(value: EventData[] | undefined) {
+        this._marriages = value;
     }
 
     get occupation() {
@@ -171,13 +162,8 @@ export class Person {
 
     get lifeEvents(): EventData[] {
         let lifeEventsArray: EventData[] = (this.residences || []).concat(this.events || [])
-        if (this.marriageDate) {
-            lifeEventsArray.push({
-                date: this.marriageDate,
-                place: this.marriagePlace,
-                type: "Marriage"
-            });
-        }
+            .concat(this.marriages || []);
+     
         lifeEventsArray.sort((a: EventData, b: EventData) => {
             if (a.date.dateObject && b.date.dateObject) {
                 return compareAsc(a.date.dateObject, b.date.dateObject);
@@ -207,8 +193,6 @@ export class Person {
         clonedPerson.birthPlace = this.birthPlace;
         clonedPerson.deathDate = this.deathDate;
         clonedPerson.deathPlace = this.deathPlace;
-        clonedPerson.marriageDate = this.marriageDate;
-        clonedPerson.marriagePlace = this.marriagePlace;
         clonedPerson.occupation = this.occupation;
         clonedPerson.parents = this.parents;
         clonedPerson.siblings = this.siblings;

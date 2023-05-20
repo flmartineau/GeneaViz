@@ -10,6 +10,8 @@ export const DATE_REGEX = {
   AFT: /^AFT.*/,
   BEF: /^BEF.*/,
   BET: /^BET.*/,
+  EST: /^EST.*/,
+  DFRENCH: /^@#DFRENCH R@/
 }
 
 
@@ -112,7 +114,9 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
 
   individuals.forEach((individual) => {
     const familyChildOf = families.find((family: any) => family.xref_id === individual["@FAMILY_CHILD"]);
-    const familySpouseOf = families.find((family: any) => family.xref_id === individual["@FAMILY_SPOUSE"]);
+    const familiesSpouseOf = families.filter((family: any) => family.xref_id === individual["@FAMILY_SPOUSE"] || 
+      (individual["+@FAMILY_SPOUSE"] && individual["+@FAMILY_SPOUSE"].includes(family.xref_id)));
+
 
     const parents: PersonData[] = familyChildOf ? [
       { id: familyChildOf["@HUSBAND"], type: "blood" },
@@ -125,16 +129,15 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
           .map((sibling) => ({ id: sibling.xref_id, type: "blood" }))
       : [];
 
-    const children: PersonData[] = familySpouseOf
-      ? [
-          { id: familySpouseOf["@CHILD"], type: "blood" },
-          ...((familySpouseOf["+@CHILD"] || []).map((child: string) => ({ id: child, type: "blood" }))),
-        ]
-      : [];
+    const children : PersonData[] = familiesSpouseOf
+      ? familiesSpouseOf.map((family: any) => {
+        return [{ id: family["@CHILD"], type: "blood" }, ...((family["+@CHILD"] || []).map((child: string) => ({ id: child, type: "blood" })))
+      ]}).flat() : [];
 
-    const spouses: PersonData[] = familySpouseOf
-      ? [{ id: familySpouseOf[individual.SEX === "M" ? "@WIFE" : "@HUSBAND"], type: "married" }]
-      : [];
+      const spouses: PersonData[] = familiesSpouseOf
+      ? familiesSpouseOf.map((family: any) => {
+        return [{ id: family[individual.SEX === "M" ? "@WIFE" : "@HUSBAND"], type: "married" } as PersonData]
+      }).flat() : [];
 
     const [firstName, lastName] = individual.NAME.split("/");
 
@@ -161,6 +164,21 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
         });
     }
 
+    let marriages: EventData[] = [];
+
+    if (familiesSpouseOf) {
+        familiesSpouseOf.forEach((family: any) => {
+            if (family["MARRIAGE/DATE"]) {
+                marriages.push({
+                    date: new GEDCOMDate(family["MARRIAGE/DATE"]),
+                    place: family["MARRIAGE/PLACE"],
+                    type: "Mariage"
+                });
+            }
+        });
+    }
+
+
     const person = new Person(individual.xref_id);
     person.gender = individual.SEX === "M" ? "male" : "female";
     person.firstName = firstName;
@@ -168,8 +186,7 @@ const parseTree = (families: any[], individuals: any[]): Person[] => {
     person.occupation = individual.OCCUPATION;
     person.birthDate = individual["BIRTH/DATE"] ? new GEDCOMDate(individual["BIRTH/DATE"]) : undefined;
     person.birthPlace = individual["BIRTH/PLACE"];
-    person.marriageDate = (familySpouseOf && familySpouseOf["MARRIAGE/DATE"]) ? new GEDCOMDate(familySpouseOf["MARRIAGE/DATE"]) : undefined;
-    person.marriagePlace = familySpouseOf ? familySpouseOf["MARRIAGE/PLACE"] : undefined;
+    person.marriages = marriages;
     person.deathDate = individual["DEATH/DATE"] ? new GEDCOMDate(individual["DEATH/DATE"]) : undefined;
     person.deathPlace = individual["DEATH/PLACE"];
     person.residences = residences;

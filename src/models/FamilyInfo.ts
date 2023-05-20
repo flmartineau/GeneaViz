@@ -7,8 +7,7 @@ export interface FamilyInfo {
     birthPlace?: string;
     deathDate?: string;
     deathPlace?: string;
-    marriageDate?: string;
-    marriagePlace?: string;
+    marriages?: EventData[];
     occupation?: string;
     gender?: string;
     parents?: RelativeInfo[];
